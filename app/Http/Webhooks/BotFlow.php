@@ -10,13 +10,14 @@ use DefStudio\Telegraph\Keyboard\Keyboard;
 
 class BotFlow extends WebhookHandler
 {
-    protected function handleChatMemberJoined(User $member): void
+    public function start(string $test): void
     {
-        $this->chat->message("Hey, {$member->firstName()}! Nice to have you here. I help people stay hydrated. What would you like from me?")
+        $this->chat->message('blaaabla'.$test)->send();
+        $this->chat->message("Hey, nice to have you here! I help people stay hydrated. Choose what you want next:")
             ->keyboard(Keyboard::make()->buttons([
                 Button::make('Create drinking reminder')->action('createReminder'),
                 Button::make('Reset my reminder')->action('deleteReminder'),
-                Button::make('Learn more about water')->url('https://test.it'),
+                Button::make('Learn more about water')->url('https://www.cdc.gov/healthyweight/healthy_eating/water-and-healthier-drinks.html'),
             ]))->send();
     }
 
@@ -30,4 +31,8 @@ class BotFlow extends WebhookHandler
         // sets reminders to 0
     }
 
+    public function testfunc()
+    {
+        $this->chat->message('show me something!')->send();
+    }
 }
