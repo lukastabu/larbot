@@ -13,11 +13,11 @@ return new class extends Migration
      */
     public function up():void
     {
-        Schema::table('telegraph_chats', function (Blueprint $table) {
-            $table->integer('weight_min')->default('0');
-            $table->integer('weight_max')->default('55');
-            $table->enum('gender', ['female', 'male'])->default('female');
-            $table->integer('reminders')->default('5');
+        Schema::table('telegraph_chats', static function (Blueprint $table) {
+            $table->integer('weight_min')->nullable()->default(null);
+            $table->integer('weight_max')->nullable()->default(null);
+            $table->enum('gender', ['female', 'male'])->nullable()->default(null);
+            $table->integer('reminders')->nullable()->default(null);
         });
     }
 

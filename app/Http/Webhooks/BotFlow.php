@@ -2,6 +2,7 @@
 
 namespace App\Http\Webhooks;
 
+use App\Models\Chat;
 use DefStudio\Telegraph\DTO\User;
 use DefStudio\Telegraph\Handlers\WebhookHandler;
 use DefStudio\Telegraph\Keyboard\Button;
@@ -27,24 +28,17 @@ class BotFlow extends WebhookHandler
         // keyboard with numeric selection
         $this->chat->message("Great! How many glasses a day would you like to intake?")
             ->keyboard(Keyboard::make()->buttons([
-                Button::make('5')->action('reminder5'),
-                Button::make('10')->action('reminder10'),
+                Button::make('5')->action('reminder')->param('count', 5),
+                Button::make('10')->action('reminder')->param('count', 10),
                 Button::make('Recommended amount')->action('weightQuestion'),
             ]))->send();
     }
 
-    public function reminder5()
+    public function reminder()
     {
-//        $this->chat->message("Great! How many glasses a day would you like to intake?")
-//            ->keyboard(Keyboard::make()->buttons([
-//                Button::make('5')->action('reminder5'),
-//                Button::make('10')->action('reminder10'),
-//                Button::make('Recommended amount')->action('reminderRecommended'),
-//            ]))->send();
-    }
-
-    public function reminder10()
-    {
+        $reminderCount = $this->data->get('count');
+        $this->chat->reminders=$reminderCount;
+        $this->chat->save();
     }
 
     public function weightQuestion()
@@ -70,8 +64,8 @@ class BotFlow extends WebhookHandler
         // STEP 2: gender
         $this->chat->message("What's your gender?")
             ->keyboard(Keyboard::make()->buttons([
-                Button::make('male')->action('male'),
-                Button::make('female')->action('female'),
+                Button::make('male')->action('gender')->param('gender', Chat::GENDER_MALE),
+                Button::make('female')->action('gender')->param('gender', Chat::GENDER_FEMALE),
             ]))->send();
     }
 
