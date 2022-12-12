@@ -2,6 +2,7 @@
 
 namespace App\Http\Webhooks;
 
+use App\Jobs\Remind;
 use App\Models\Chat;
 use DefStudio\Telegraph\DTO\User;
 use DefStudio\Telegraph\Handlers\WebhookHandler;
@@ -28,6 +29,7 @@ class BotFlow extends WebhookHandler
         // keyboard with numeric selection
         $this->chat->message("Great! How many glasses a day would you like to intake?")
             ->keyboard(Keyboard::make()->buttons([
+                Button::make('10k')->action('reminder')->param('count', 10000),
                 Button::make('5')->action('reminder')->param('count', 5),
                 Button::make('10')->action('reminder')->param('count', 10),
                 Button::make('Recommended amount')->action('weightQuestion'),
@@ -39,6 +41,7 @@ class BotFlow extends WebhookHandler
         $reminderCount = $this->data->get('count');
         $this->chat->reminders=$reminderCount;
         $this->chat->save();
+        Remind::dispatch($this->chat);
     }
 
     public function weightQuestion()
@@ -82,6 +85,8 @@ class BotFlow extends WebhookHandler
     public function deleteReminder()
     {
         // sets reminders to 0
+        $this->chat->reminders=0;
+        $this->chat->save();
     }
 
     public function testfunc()

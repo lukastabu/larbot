@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Chat;
 use DefStudio\Telegraph\Models\TelegraphChat;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -14,14 +15,15 @@ class Remind implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    private Chat $chat;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(int $numberOfReminders, TelegraphChat $chat, string $username)
+    public function __construct(Chat $chatForReminder)
     {
-        //
+        $this->chat = $chatForReminder;
     }
 
     /**
@@ -29,8 +31,16 @@ class Remind implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle():void
     {
-        //
+        $this->chat->message('have a nice drink')->send();
+
+        if (in_array($this->chat->reminders, [0, null], true)) {
+            return;
+        }
+
+        $reminderByHour = (int) (86400/$this->chat->reminders);
+
+        self::dispatch($this->chat)->delay(now()->addSeconds($reminderByHour));
     }
 }
