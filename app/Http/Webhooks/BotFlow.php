@@ -15,7 +15,6 @@ class BotFlow extends WebhookHandler
 {
     public function start(string $test): void
     {
-//        $this->chat->message('blaaabla'.$test)->send();
         $this->chat->message("Hey, nice to have you here! I help people stay hydrated. Choose what you want next:")
             ->keyboard(Keyboard::make()->buttons([
                 Button::make('Create drinking reminder')->action('createReminder'),
@@ -49,11 +48,11 @@ class BotFlow extends WebhookHandler
         // STEP 1: selecting weight range
         $this->chat->message("What's your weight?")
             ->keyboard(Keyboard::make()->buttons([
-                Button::make('below 55')->action('weight')->param('min', '40')->param('max', '55'),
-                Button::make('56-70')->action('weight')->param('min', '56')->param('max', '70'),
-                Button::make('71-85')->action('weight')->param('min', '71')->param('max', '85'),
-                Button::make('86-100')->action('weight')->param('min', '86')->param('max', '100'),
-                Button::make('over 101')->action('weight')->param('min', '101')->param('max', '120'),
+                Button::make('below 55')->action('weight')->param('min', '40')->param('max', '55')->action('genderQuestion'),
+                Button::make('56-70')->action('weight')->param('min', '56')->param('max', '70')->action('genderQuestion'),
+                Button::make('71-85')->action('weight')->param('min', '71')->param('max', '85')->action('genderQuestion'),
+                Button::make('86-100')->action('weight')->param('min', '86')->param('max', '100')->action('genderQuestion'),
+                Button::make('over 101')->action('weight')->param('min', '101')->param('max', '120')->action('genderQuestion'),
             ]))->send();
     }
 
@@ -67,15 +66,11 @@ class BotFlow extends WebhookHandler
         // STEP 2: gender
         $this->chat->message("What's your gender?")
             ->keyboard(Keyboard::make()->buttons([
-                Button::make('male')->action('gender')->param('gender', Chat::GENDER_MALE),
-                Button::make('female')->action('gender')->param('gender', Chat::GENDER_FEMALE),
+                Button::make('male')->action('gender')->param('gender', Chat::GENDER_MALE)->action('reminderSet'),
+                Button::make('female')->action('gender')->param('gender', Chat::GENDER_FEMALE)->action('reminderSet'),
             ]))->send();
     }
 
-    public function gender()
-    {
-        //save gender into DB and call calculator
-    }
 
     public function calculator()
     {
@@ -87,6 +82,14 @@ class BotFlow extends WebhookHandler
         // sets reminders to 0
         $this->chat->reminders=0;
         $this->chat->save();
+        $this->chat->message('Your reminder is cleared!')->send();
+
+    }
+
+    public function reminderSet()
+    {
+        // save reminder amount
+        $this->chat->message('Your reminder is set!')->send();
     }
 
     public function testfunc()
